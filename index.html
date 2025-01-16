@@ -18,10 +18,9 @@
     </style>
 </head>
 <body>
-    <!-- Embed the PDF in a sandboxed iframe -->
+    <!-- Embed the PDF -->
     <iframe 
         src="avoy.pdf#toolbar=0&navpanes=0&scrollbar=0" 
-        sandbox="allow-scripts allow-same-origin"
         oncontextmenu="return false;">
     </iframe>
 
@@ -31,7 +30,7 @@
             e.preventDefault();
         });
 
-        // Prevent keyboard shortcuts like Ctrl+S or Ctrl+P
+        // Prevent common shortcuts like Ctrl+S or Ctrl+P
         document.addEventListener('keydown', function(e) {
             if ((e.ctrlKey && (e.key === 's' || e.key === 'p')) || e.key === 'F12') {
                 e.preventDefault();
