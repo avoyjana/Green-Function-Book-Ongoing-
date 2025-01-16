@@ -3,34 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure PDF Viewer</title>
+    <title>PDF Viewer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-        iframe {
+        #viewer {
             width: 100vw;
             height: 100vh;
-            border: none;
+            background: #f0f0f0;
+            overflow: auto;
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
         }
     </style>
 </head>
-<body>
-    <!-- Embed the PDF -->
-    <iframe 
-        src="avoy.pdf#toolbar=0&navpanes=0&scrollbar=0" 
-        oncontextmenu="return false;">
-    </iframe>
+<body oncontextmenu="return false">
+    <div id="viewer"></div>
 
     <script>
-        // Disable right-click on the page
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        });
+        const url = 'avoy.pdf'; // Path to your PDF file
+        const viewer = document.getElementById('viewer');
 
-        // Prevent common shortcuts like Ctrl+S or Ctrl+P
+        const renderPDF = async (url) => {
+            const pdf = await pdfjsLib.getDocument(url).promise;
+
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const viewport = page.getViewport({ scale: 1.5 });
+
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+
+                await page.render({ canvasContext: context, viewport }).promise;
+                viewer.appendChild(canvas);
+            }
+        };
+
+        renderPDF(url);
+
+        // Disable common shortcuts
         document.addEventListener('keydown', function(e) {
             if ((e.ctrlKey && (e.key === 's' || e.key === 'p')) || e.key === 'F12') {
                 e.preventDefault();
